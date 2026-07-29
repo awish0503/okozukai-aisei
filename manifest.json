@@ -1,0 +1,16 @@
+{
+  "name": "藍世のおこづかいちょう",
+  "short_name": "おこづかい",
+  "description": "毎月のおこづかいを財布・貯金箱・ありがとう貯金に分けて記録するアプリ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF8ED",
+  "theme_color": "#E3A73A",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
