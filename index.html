@@ -84,8 +84,11 @@
   .box-card .name{font-size:12px;margin-top:4px;color:var(--ink-soft);}
   .box-card .amt{font-size:18px;font-weight:700;margin-top:2px;font-family:'Zen Maru Gothic',sans-serif;}
   .box-card.wallet .amt{color:var(--wallet-dark);}
-  .box-card.piggy .amt{color:var(--piggy-dark);}
-  .box-card.thanks .amt{color:var(--thanks-dark);}
+  .box-card .range{font-size:11px;margin-top:6px;color:var(--ink-soft);font-family:'Zen Maru Gothic',sans-serif;line-height:1.4;word-break:break-all;}
+  .box-card .diff{font-size:14px;font-weight:700;margin-top:2px;font-family:'Zen Maru Gothic',sans-serif;}
+  .box-card .diff.plus{color:#2E7D4F;}
+  .box-card .diff.minus{color:var(--danger);}
+  .box-card .diff.zero{color:var(--ink-soft);}
   .card-sub{font-size:9px;font-weight:400;color:var(--ink-soft);display:inline-block;margin-top:2px;}
   .daily-panel{
     background:var(--card);border:1px solid var(--line);
@@ -98,9 +101,11 @@
   }
   .daily-row:last-of-type{border-bottom:none;}
   .daily-row-label{font-size:13px;font-weight:700;flex:1 1 100px;font-family:'Zen Maru Gothic',sans-serif;}
-  .daily-row-value{font-size:16px;font-weight:700;font-family:'Zen Maru Gothic',sans-serif;}
-  .daily-row-value .arrow{font-size:13px;margin-left:3px;}
-  .daily-row-msg{flex-basis:100%;font-size:12px;color:var(--ink-soft);}
+  .daily-row-value{font-size:15px;font-weight:700;font-family:'Zen Maru Gothic',sans-serif;}
+  .daily-row-diff{flex-basis:100%;font-size:13px;font-weight:700;font-family:'Zen Maru Gothic',sans-serif;margin-top:2px;}
+  .daily-row-diff.plus{color:#2E7D4F;}
+  .daily-row-diff.minus{color:var(--danger);}
+  .daily-row-diff.zero{color:var(--ink-soft);}
   .daily-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.6;}
   .chart-card{
     background:var(--card);
@@ -294,33 +299,35 @@
       <div class="box-card piggy">
         <div class="icon">🐷</div>
         <div class="name">ふやすおかね<br><span class="card-sub">（とうし）</span></div>
-        <div class="amt">¥<span id="piggyAmt">0</span></div>
+        <div class="range">¥<span id="piggyPrincipalBox">0</span> → ¥<span id="piggyAmt">0</span></div>
+        <div class="diff" id="piggyDiffBox">＋¥0</div>
       </div>
       <div class="box-card thanks">
         <div class="icon">💛</div>
         <div class="name">ありがとう<br><span class="card-sub">（ふくうんちょきん）</span></div>
-        <div class="amt">¥<span id="thanksAmt">0</span></div>
+        <div class="range">¥<span id="thanksPrincipalBox">0</span> → ¥<span id="thanksAmt">0</span></div>
+        <div class="diff" id="thanksDiffBox">＋¥0</div>
       </div>
     </div>
     <div class="daily-panel">
       <div class="section-title" style="margin:0 0 4px;">きょうの ようす</div>
       <div class="daily-row">
         <div class="daily-row-label">🐷 ふやすおかね</div>
-        <div class="daily-row-value">¥<span id="piggyTodayVal">0</span><span class="arrow" id="piggyTodayArrow"></span></div>
-        <div class="daily-row-msg" id="piggyTodayMsg"></div>
+        <div class="daily-row-value">¥<span id="piggyPrincipalToday">0</span> → ¥<span id="piggyTodayVal">0</span></div>
+        <div class="daily-row-diff" id="piggyTodayDiff">＋¥0</div>
       </div>
       <div class="daily-row">
         <div class="daily-row-label">💛 ありがとう</div>
-        <div class="daily-row-value">¥<span id="thanksTodayVal">0</span><span class="arrow" id="thanksTodayArrow"></span></div>
-        <div class="daily-row-msg" id="thanksTodayMsg"></div>
+        <div class="daily-row-value">¥<span id="thanksPrincipalToday">0</span> → ¥<span id="thanksTodayVal">0</span></div>
+        <div class="daily-row-diff" id="thanksTodayDiff">＋¥0</div>
       </div>
       <div class="daily-note">
-        もとで（いままで いれた ぶん）：ふやすおかね ¥<span id="piggyPrincipalVal">0</span>／ありがとう ¥<span id="thanksPrincipalVal">0</span><br>
+        「もとで（いままで いれた ぶん）」→「いまの ねうち」の じゅんに ひょうじしています。<br>
         「ふやすおかね」も「ありがとう」も、いれた ひから ふくりで ふえていきます（じっさいの 10ねんぶんの データを つかった けいさんです）。
       </div>
     </div>
     <div class="chart-card">
-      <div class="cap">つみたての ようす（つき ごとに、もとで → いま を くらべる）</div>
+      <div class="cap">つみたての ようす（つき ごとに、もとで → いま を くらべる。「いま」は きょうの ちいさな ゆれも はいっているので、まいにち すこしずつ かわります）</div>
       <div id="lotsWrap"></div>
     </div>
     <div class="chart-card">
@@ -412,6 +419,13 @@
           <div class="sub">いまの せってい：¥<span id="coinValueDisp">100</span></div>
         </div>
         <input type="number" id="coinValueInput" style="width:90px;" value="100">
+      </div>
+      <div class="settings-row" style="align-items:flex-start;">
+        <div>
+          <div class="label">これまでの きろくも けいさんしなおす</div>
+          <div class="sub">オンに すると、いままでの「ありがとう」の きろくも、あたらしい ねだんで けいさんしなおします</div>
+        </div>
+        <input type="checkbox" id="coinRecalcPast" checked style="width:20px;height:20px;flex-shrink:0;margin-left:10px;">
       </div>
       <button class="secondary" id="btnSaveCoin">この ねだんに する</button>
     </div>
@@ -514,9 +528,15 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
 });
 /* ---------- Helpers ---------- */
 function yen(n){ return Math.round(Number(n) || 0).toLocaleString("ja-JP"); }
+function diffClass(diff){
+  return diff > 0.5 ? "plus" : (diff < -0.5 ? "minus" : "zero");
+}
+function diffText(diff){
+  if (diff > 0.5) return "＋¥" + yen(diff);
+  if (diff < -0.5) return "－¥" + yen(Math.abs(diff));
+  return "±¥0";
+}
 function formatLocalDate(d){
-  // toISOString()はUTC基準になり、日本時間(JST)だと日付が1日ずれることがあるため、
-  // ローカルの年月日をそのまま組み立てる方式にする
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -542,18 +562,10 @@ function formatJpDate(dateStr){
   const [y, m, d] = dateStr.split("-").map(Number);
   return `${y}ねん${m}がつ${d}にち`;
 }
-/* ---------- ふくり（複利）エンジン ----------
-   じっさいの 2016〜2025年の 10ねんぶんの データを つかい、
-   それより あとの 年は おなじ パターンを くりかえして つかいます
-   （みらいの ねあがり・ねさがりは だれにも わからないため）。
-*/
-// じっさいの S&P500 ねんかん トータルリターン（配当こみ、%）
 const EQUITY_RETURNS = {
   2016: 11.96, 2017: 21.83, 2018: -4.38, 2019: 31.49, 2020: 18.40,
   2021: 28.71, 2022: -18.11, 2023: 26.29, 2024: 25.02, 2025: 17.88
 };
-// じっさいの 米国投資適格債券指数を 3わり、S&P500を 7わり ブレンドした
-// 「やすらかタイプ」の ねんかんリターン（%、じっさいの データを もとに けいさん）
 const BALANCED_RETURNS = {
   2016: 5.28, 2017: 9.03, 2018: -1.24, 2019: 15.37, 2020: 10.76,
   2021: 7.37, 2022: -14.55, 2023: 11.84, 2024: 8.42, 2025: 10.40
@@ -613,8 +625,6 @@ function settleAllGrowth(){
 function findOrCreateLot(lots, monthKey){
   let lot = lots.find((l) => l.month === monthKey);
   if (!lot) {
-    // あたらしい つきは、その つきの ついたちから ふくりが はじまった ことに する
-    // （さかのぼって いれても、正しく その ぶんの ねあがり・ねさがりが 反映される）
     lot = { month: monthKey, principal: 0, value: 0, lastUpdate: monthKey + "-01" };
     lots.push(lot);
   }
@@ -628,7 +638,6 @@ function settleLots(lots, kind){
 function sumLotValue(lots){
   return (lots || []).reduce((s, l) => s + (l.value || 0), 0);
 }
-/* --- 日々の「ゆらぎ」演出（じっさいの 年間データを 土台に、日付だけから 計算する 疑似的な 日次変動） --- */
 function seededRandom01(seedStr){
   let h = 0;
   for (let i = 0; i < seedStr.length; i++) { h = (h * 31 + seedStr.charCodeAt(i)) | 0; }
@@ -636,8 +645,6 @@ function seededRandom01(seedStr){
   return x - Math.floor(x);
 }
 function dailyWobblePct(dateStr, seedKey, amplitude){
-  // 「大きな うねり」成分：10日ごとの ふしめを ゆるやかに つないで、
-  // じっさいの かぶかチャートのような、なんにちも つづく のぼりさがりを つくる
   const dayIndex = Math.floor(new Date(dateStr + "T00:00:00").getTime() / 86400000);
   const bucketSize = 10;
   const bucketA = Math.floor(dayIndex / bucketSize);
@@ -646,11 +653,9 @@ function dailyWobblePct(dateStr, seedKey, amplitude){
   const waveA = seededRandom01(bucketA + "_" + seedKey + "_wave") - 0.5;
   const waveB = seededRandom01(bucketB + "_" + seedKey + "_wave") - 0.5;
   const trend = waveA + (waveB - waveA) * progress;
-  // 「日々の こまかい ゆれ」成分：1日ごとに かわる、こまかい ぎざぎざ
   const r1 = seededRandom01(dateStr + "_" + seedKey + "_a");
   const r2 = seededRandom01(dateStr + "_" + seedKey + "_b");
   const daily = ((r1 + r2) / 2) - 0.5;
-  // うねり7割・こまかいゆれ3割で ブレンド（じっさいの ねあがり・ねさがりに ちかい うごきに する）
   const combined = trend * 0.7 + daily * 0.3;
   return combined * amplitude * 2;
 }
@@ -664,19 +669,6 @@ function dailySnapshot(value, seedKey, amplitude){
   const yestVal = value * (1 + yestPct / 100);
   return { today, todayVal, diff: todayVal - yestVal };
 }
-function todayMessage(diff){
-  if (diff > 3) return "きのうより ちょっと あがったよ😊";
-  if (diff < -3) return "きのうより ちょっと さがったね。";
-  return "きのうと あまり かわらないね。";
-}
-function todayArrow(diff){
-  if (diff > 3) return "⬆️";
-  if (diff < -3) return "⬇️";
-  return "➡️";
-}
-/* ---------- 「もとで（げんほん）」の すいい グラフ ----------
-   きろく・ありがとう・ちょうせいを「選んだ月／日付」の順に並べなおして、
-   いれてきた きんがくの すいいを 正しい じかんじゅんに 計算する（ふくりは ふくまない） */
 function computeTimeline(){
   const events = [];
   (state.monthlyRecords || []).forEach((r) => {
@@ -720,7 +712,6 @@ function computeTimeline(){
   });
   return points;
 }
-/* ---------- Render ---------- */
 function piggyTotalValue(){
   return (state.piggyGrowth ? state.piggyGrowth.value : (state.piggybank || 0)) + sumLotValue(state.piggyLots);
 }
@@ -728,58 +719,78 @@ function thanksTotalValue(){
   return (state.thanksGrowth ? state.thanksGrowth.value : (state.thanksBank || 0)) + sumLotValue(state.thanksLots);
 }
 function renderAll(){
-  // 「きょうのようす」の ゆらぎ値を さきに 計算して、合計・はこカードにも おなじ 数字を つかう
-  // （表示ばしょによって 金額が ちがって みえないように 統一する）
   const pSnap = dailySnapshot(piggyTotalValue(), "piggy", 6.75);
   const tSnap = dailySnapshot(thanksTotalValue(), "thanks", 2.7);
   document.getElementById("walletAmt").textContent = yen(state.wallet);
   document.getElementById("piggyAmt").textContent = yen(pSnap.todayVal);
   document.getElementById("thanksAmt").textContent = yen(tSnap.todayVal);
+  document.getElementById("piggyPrincipalBox").textContent = yen(state.piggybank);
+  document.getElementById("thanksPrincipalBox").textContent = yen(state.thanksBank);
+  const pBoxDiff = pSnap.todayVal - (state.piggybank || 0);
+  const tBoxDiff = tSnap.todayVal - (state.thanksBank || 0);
+  const pDiffEl = document.getElementById("piggyDiffBox");
+  pDiffEl.textContent = diffText(pBoxDiff);
+  pDiffEl.className = "diff " + diffClass(pBoxDiff);
+  const tDiffEl = document.getElementById("thanksDiffBox");
+  tDiffEl.textContent = diffText(tBoxDiff);
+  tDiffEl.className = "diff " + diffClass(tBoxDiff);
   const total = (state.wallet || 0) + pSnap.todayVal + tSnap.todayVal;
   const principal = (state.wallet || 0) + (state.piggybank || 0) + (state.thanksBank || 0);
   const diff = total - principal;
   document.getElementById("totalAmt").textContent = yen(total);
   document.getElementById("principalAmt").textContent = yen(principal);
   const diffEl = document.getElementById("totalDiff");
-  diffEl.textContent = (diff > 0 ? "＋¥" : diff < 0 ? "－¥" : "±¥") + yen(Math.abs(diff));
-  diffEl.className = "total-diff " + (diff > 0 ? "plus" : diff < 0 ? "minus" : "zero");
+  diffEl.textContent = diffText(diff);
+  diffEl.className = "total-diff " + diffClass(diff);
   document.getElementById("coinValueShow").textContent = yen(state.coinValue);
   document.getElementById("coinValueDisp").textContent = yen(state.coinValue);
-  document.getElementById("piggyPrincipalVal").textContent = yen(state.piggybank);
-  document.getElementById("thanksPrincipalVal").textContent = yen(state.thanksBank);
   renderDaily(pSnap, tSnap);
   renderChart();
   renderRecordList();
   renderThanksList();
-  renderLots();
+  const pTotal = piggyTotalValue();
+  const tTotal = thanksTotalValue();
+  const pRatio = pTotal > 0 ? (pSnap.todayVal / pTotal) : 1;
+  const tRatio = tTotal > 0 ? (tSnap.todayVal / tTotal) : 1;
+  renderLots(pRatio, tRatio);
   renderManabi();
 }
 function renderDaily(pSnap, tSnap){
-  // renderAll から わたされなかった とき（念のため）は 自分で 計算する
   const dp = pSnap || dailySnapshot(piggyTotalValue(), "piggy", 6.75);
+  document.getElementById("piggyPrincipalToday").textContent = yen(state.piggybank);
   document.getElementById("piggyTodayVal").textContent = yen(dp.todayVal);
-  document.getElementById("piggyTodayArrow").textContent = todayArrow(dp.diff);
-  document.getElementById("piggyTodayMsg").textContent = todayMessage(dp.diff);
+  const pDiff = dp.todayVal - (state.piggybank || 0);
+  const pDiffEl = document.getElementById("piggyTodayDiff");
+  pDiffEl.textContent = diffText(pDiff);
+  pDiffEl.className = "daily-row-diff " + diffClass(pDiff);
   const dt = tSnap || dailySnapshot(thanksTotalValue(), "thanks", 2.7);
+  document.getElementById("thanksPrincipalToday").textContent = yen(state.thanksBank);
   document.getElementById("thanksTodayVal").textContent = yen(dt.todayVal);
-  document.getElementById("thanksTodayArrow").textContent = todayArrow(dt.diff);
-  document.getElementById("thanksTodayMsg").textContent = todayMessage(dt.diff);
+  const tDiff = dt.todayVal - (state.thanksBank || 0);
+  const tDiffEl = document.getElementById("thanksTodayDiff");
+  tDiffEl.textContent = diffText(tDiff);
+  tDiffEl.className = "daily-row-diff " + diffClass(tDiff);
 }
-function renderLots(){
+function renderLots(pRatio, tRatio){
   const wrap = document.getElementById("lotsWrap");
   if (!wrap) return;
+  // pRatio・tRatio は「きょうの ゆらぎ」を かけた あとの ひりつ（箱カード・ごうけいと おなじ ひりつ）。
+  // これを かくロットにも おなじように かけることで、ここの ごうけいと 箱カード・ごうけいの
+  // すうじが かならず いっちする ように している（もとで は ゆらがない）。
+  pRatio = (pRatio === undefined || pRatio === null || !isFinite(pRatio)) ? 1 : pRatio;
+  tRatio = (tRatio === undefined || tRatio === null || !isFinite(tRatio)) ? 1 : tRatio;
   const rows = [];
   if (state.piggyGrowth && state.piggyGrowth.value > 0) {
-    rows.push({ label: "🐷 それいぜんの ぶん", principal: state.piggyGrowth.value, value: state.piggyGrowth.value, note: "（はじめた ひより まえの ぶん）" });
+    rows.push({ label: "🐷 それいぜんの ぶん", principal: state.piggyGrowth.value, value: state.piggyGrowth.value * pRatio, note: "（はじめた ひより まえの ぶん）" });
   }
   (state.piggyLots || []).slice().sort((a,b)=>a.month<b.month?1:-1).forEach((l) => {
-    rows.push({ label: "🐷 " + formatJpMonth(l.month), principal: l.principal, value: l.value });
+    rows.push({ label: "🐷 " + formatJpMonth(l.month), principal: l.principal, value: l.value * pRatio });
   });
   if (state.thanksGrowth && state.thanksGrowth.value > 0) {
-    rows.push({ label: "💛 それいぜんの ぶん", principal: state.thanksGrowth.value, value: state.thanksGrowth.value, note: "（はじめた ひより まえの ぶん）" });
+    rows.push({ label: "💛 それいぜんの ぶん", principal: state.thanksGrowth.value, value: state.thanksGrowth.value * tRatio, note: "（はじめた ひより まえの ぶん）" });
   }
   (state.thanksLots || []).slice().sort((a,b)=>a.month<b.month?1:-1).forEach((l) => {
-    rows.push({ label: "💛 " + formatJpMonth(l.month), principal: l.principal, value: l.value });
+    rows.push({ label: "💛 " + formatJpMonth(l.month), principal: l.principal, value: l.value * tRatio });
   });
   if (rows.length === 0) {
     wrap.innerHTML = `<div class="empty-note">まだ つみたての きろくが ありません</div>`;
@@ -818,7 +829,6 @@ function totalValueAt(dateStr){
   const wallet = walletValueAt(dateStr);
   const piggyBase = (state.piggyGrowth ? state.piggyGrowth.value : 0) + lotsValueAt(state.piggyLots, dateStr, "equity");
   const thanksBase = (state.thanksGrowth ? state.thanksGrowth.value : 0) + lotsValueAt(state.thanksLots, dateStr, "balanced");
-  // なめらかな 年間の うごきに、日々の ちいさな ゆらぎを のせて、もっと ほんものっぽい グラフに する
   const piggyWobbled = piggyBase * (1 + dailyWobblePct(dateStr, "piggy", 6.75) / 100);
   const thanksWobbled = thanksBase * (1 + dailyWobblePct(dateStr, "thanks", 2.7) / 100);
   return wallet + piggyWobbled + thanksWobbled;
@@ -837,11 +847,8 @@ function buildSampleDates(range){
   const today = todayISO();
   const dates = [];
   if (range === "week") {
-    // ちょくきん（やく3かげつ）を、まいにち 1てんずつ
     for (let i = 89; i >= 0; i--) dates.push(addDaysStr(today, -i));
   } else {
-    // きろくを はじめた ひ〜きょうまで、まいにち 1てんずつ
-    // （じっさいの かぶかチャートみたいに、こまかい ぎざぎざを だすため）
     const earliest = findEarliestDataDate();
     let cur = new Date(earliest + "T00:00:00");
     const end = new Date(today + "T00:00:00");
@@ -877,9 +884,6 @@ function renderChart(){
   const rawMax = Math.max(...vals);
   const rawMin = Math.min(...vals);
   const rawRange = Math.max(rawMax - rawMin, 1);
-  // 見やすいように、じっさいの さいだい・さいしょうの うえした に すこし よゆう(5%)を もたせる
-  // （¥0を むりに ふくめない ―― これまでは ¥0が いつも した に はいってしまい、
-  // 　ほんらいの ねうごきが グラフの じょうぶに ぎゅっと おしつぶされて みえていた）
   const pad = rawRange * 0.08;
   const max = rawMax + pad;
   const min = Math.max(rawMin - pad, 0);
@@ -893,7 +897,6 @@ function renderChart(){
   const areaPath = path
     + ` L ${pts[pts.length - 1][0].toFixed(1)} ${(padT + innerH).toFixed(1)}`
     + ` L ${pts[0][0].toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-  // よこの めもり線を3本(さいだい・まんなか・さいしょう)
   const gridVals = [max, (max + min) / 2, min];
   const gridLines = gridVals.map((gv) => {
     const gy = yOf(gv).toFixed(1);
@@ -901,7 +904,6 @@ function renderChart(){
       <text x="${padL - 6}" y="${Number(gy) + 3}" font-size="9" fill="#8A7A5C" text-anchor="end">¥${Math.round(gv).toLocaleString("ja-JP")}</text>`;
   }).join("");
   const shortJp = (d) => { const [y, m, day] = d.split("-").map(Number); return chartRange === "week" ? `${m}/${day}` : `${y}/${m}`; };
-  // したの めもり（ひづけ）を、はし2つだけでなく、あいだも ふくめて 4〜5てん ひょうじする
   const tickCount = Math.min(5, dates.length);
   const tickIdxs = [];
   for (let k = 0; k < tickCount; k++) {
@@ -1043,14 +1045,13 @@ document.getElementById("thanksList").addEventListener("click", (e) => {
     state.thanksRecords = state.thanksRecords.filter((x) => x.ts !== ts);
     saveState().then(() => {
       document.getElementById("thAmount").value = r.amount;
-      document.getElementById("thCoins").value = Math.round(r.amount / (state.coinValue || 100)) || 1;
+      document.getElementById("thCoins").value = r.coins || (Math.round(r.amount / (state.coinValue || 100)) || 1);
       document.getElementById("thReason").value = r.reason || "";
       document.getElementById("thDate").value = r.date || todayISO();
       showToast("したの フォームに もどしました。なおして、もう いちど おしてね");
     });
   }
 });
-/* ---------- Record tab logic ---------- */
 document.getElementById("recMonth").value = monthNowStr();
 function updateSplitCheck(){
   const total = Number(document.getElementById("recTotal").value) || 0;
@@ -1097,7 +1098,6 @@ document.getElementById("btnSaveRecord").addEventListener("click", () => {
     updateSplitCheck();
   });
 });
-/* ---------- Thanks tab logic ---------- */
 document.getElementById("thDate").value = todayISO();
 function updateThanksAmount(){
   const coins = Number(document.getElementById("thCoins").value) || 0;
@@ -1105,6 +1105,7 @@ function updateThanksAmount(){
 }
 document.getElementById("thCoins").addEventListener("input", updateThanksAmount);
 document.getElementById("btnSaveThanks").addEventListener("click", () => {
+  const coins = Number(document.getElementById("thCoins").value) || 0;
   const amount = Number(document.getElementById("thAmount").value) || 0;
   const reason = document.getElementById("thReason").value.trim();
   const date = document.getElementById("thDate").value || todayISO();
@@ -1118,7 +1119,7 @@ document.getElementById("btnSaveThanks").addEventListener("click", () => {
   lot.value += amount;
   settleGrowth(lot, "balanced");
   state.thanksRecords = state.thanksRecords || [];
-  state.thanksRecords.push({ amount, reason, date, ts: Date.now() });
+  state.thanksRecords.push({ amount, coins, reason, date, ts: Date.now() });
   saveState().then(() => {
     showToast("ありがとうちょきんに いれました！");
     document.getElementById("thReason").value = "";
@@ -1126,7 +1127,31 @@ document.getElementById("btnSaveThanks").addEventListener("click", () => {
     updateThanksAmount();
   });
 });
-/* ---------- まなび クエスト ---------- */
+function recalcThanksForNewCoinValue(oldValue, newValue){
+  let changed = false;
+  (state.thanksRecords || []).forEach((r) => {
+    let coins = r.coins;
+    if (!coins || coins <= 0) {
+      coins = Math.round((r.amount || 0) / (oldValue || 1)) || 0;
+    }
+    if (!coins || coins <= 0) return;
+    const newAmount = coins * newValue;
+    const diff = newAmount - (r.amount || 0);
+    r.coins = coins;
+    if (Math.abs(diff) < 0.5) { r.amount = newAmount; return; }
+    state.thanksBank = (state.thanksBank || 0) + diff;
+    const monthKey = (r.date || "2026-01-01").slice(0, 7);
+    state.thanksLots = state.thanksLots || [];
+    const lot = state.thanksLots.find((l) => l.month === monthKey);
+    if (lot) {
+      lot.principal += diff;
+      lot.value += diff;
+    }
+    r.amount = newAmount;
+    changed = true;
+  });
+  return changed;
+}
 const MANABI_QUIZ = [
   {
     id: "m1",
@@ -1237,12 +1262,17 @@ document.getElementById("manabiList").addEventListener("click", (e) => {
   resultDiv.classList.add("hidden");
   resultDiv.innerHTML = "";
 });
-/* ---------- Settings tab logic ---------- */
 document.getElementById("btnSaveCoin").addEventListener("click", () => {
   const v = Number(document.getElementById("coinValueInput").value) || 100;
+  const oldValue = state.coinValue || 100;
+  const recalcPast = document.getElementById("coinRecalcPast").checked;
   state.coinValue = v;
+  let recalced = false;
+  if (recalcPast && v !== oldValue) {
+    recalced = recalcThanksForNewCoinValue(oldValue, v);
+  }
   saveState().then(() => {
-    showToast("コインの ねだんを かえました");
+    showToast(recalced ? "コインの ねだんを かえて、いままでの きろくも けいさんしなおしました" : "コインの ねだんを かえました");
     updateThanksAmount();
   });
 });
@@ -1290,7 +1320,6 @@ document.getElementById("restoreFile").addEventListener("change", (e) => {
   };
   reader.readAsText(file);
 });
-/* ---------- Service worker ---------- */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
